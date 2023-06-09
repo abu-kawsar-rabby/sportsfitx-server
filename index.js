@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config();
 
 const app = express();
@@ -11,7 +12,6 @@ app.use(cors());
 app.use(express.json());
 
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.xvfigcf.mongodb.net/?retryWrites=true&w=majority`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -30,12 +30,26 @@ async function run() {
 
         // database collection
         const database = client.db("classDB");
+        const userCollection = database.collection("users");
         const classCollection = database.collection("classes");
 
-        // classes section
+        // users api
+        app.get('/users', async (req, res) => {
+            result = await userCollection.find().toArray();
+            res.send(result)
+        })
+
+        // classes api
         app.get('/classes', async (req, res) => {
             result = await classCollection.find().toArray();
-            res.send(result)
+            res.send(result);
+        })
+
+        app.get('/classes/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) };
+            const result = await classCollection.findOne(query);
+            res.send(result);
         })
 
         app.post('/classes', async (req, res) => {
