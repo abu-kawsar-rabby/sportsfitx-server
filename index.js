@@ -29,13 +29,47 @@ async function run() {
         await client.connect();
 
         // database collection
-        const database = client.db("classDB");
+        const database = client.db("sportsfitxDB");
         const userCollection = database.collection("users");
         const classCollection = database.collection("classes");
 
         // users api
         app.get('/users', async (req, res) => {
             result = await userCollection.find().toArray();
+            res.send(result)
+        })
+
+        app.get('/users/:email', async (req, res) => {
+            const email = req.params.email;
+            if (!email) {
+                res.send([]);
+            }
+            const query = { email: email }
+            result = await userCollection.findOne(query)
+            res.send(result)
+        })
+
+        app.post('/users', async (req, res) => {
+            const user = req.body;
+            const query = { email: user.email }
+            const existingUser = await userCollection.findOne(query);
+
+            if (existingUser) {
+                return res.send({ message: 'user already exists' })
+            }
+
+            const result = await userCollection.insertOne(user);
+            res.send(result);
+        });
+
+        app.patch('/users/:id', async (req, res) => {
+            const id = req.params.id
+            const role = req.body
+            const query = { _id: new ObjectId(id) }
+            const updateDoc = {
+                $set: role,
+            }
+            const result = await userCollection.updateOne(query, updateDoc)
             res.send(result)
         })
 
@@ -56,6 +90,21 @@ async function run() {
             const newClass = req.body;
             const result = await classCollection.insertOne(newClass);
             res.send(result)
+        })
+
+        app.put('/classes/:id', async (req, res) => {
+            const id = req.params.id;
+            const updatedClass = req.body;
+
+            const query = { _id: new ObjectId(id) };
+            const options = { upsert: true };
+
+            const updateDoc = {
+                $set: updatedClass,
+            };
+            const result = await classCollection.updateOne(query, updateDoc, options);
+            res.send(result)
+
         })
 
 
