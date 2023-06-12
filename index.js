@@ -135,6 +135,14 @@ async function run() {
             res.send(result);
         })
 
+        app.get('/popular-classes', async (req, res) => {
+            const query = { status: 'approved' };
+            const sortOptions = { enrollment: -1 }
+            // todo limit 6 only
+            result = await classCollection.find(query).sort(sortOptions).toArray();
+            res.send(result);
+        })
+
         app.get('/manage-classes', verifyJWT, verifyAdmin, async (req, res) => {
             result = await classCollection.find().toArray();
             res.send(result);
@@ -157,7 +165,7 @@ async function run() {
             res.send(result);
         });
 
-        app.get('/classes/:id', async (req, res) => {
+        app.get('/classes/:id', verifyJWT, async (req, res) => {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) };
             const result = await classCollection.findOne(query);
