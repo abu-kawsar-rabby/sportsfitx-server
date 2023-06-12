@@ -150,7 +150,7 @@ async function run() {
 
         app.get('/popular-instructor', async (req, res) => {
             const query = { role: 'instructor' };
-            const sortOptions = { enrollment: -1 }
+            const sortOptions = { name: 1 }
             result = await userCollection.find(query).sort(sortOptions).limit(6).toArray();
             res.send(result);
         })
@@ -190,7 +190,7 @@ async function run() {
                 },
             };
 
-            const result = await toyCollection.updateOne(query, updatedClass);
+            const result = await classCollection.updateOne(query, updatedClass);
             res.send(result)
 
         })
