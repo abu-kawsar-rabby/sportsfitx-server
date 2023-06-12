@@ -177,6 +177,24 @@ async function run() {
             res.send(result);
         });
 
+        app.patch('/my-classes/:id', async (req, res) => {
+            const id = req.params.id;
+            const classData = req.body;
+            const query = { _id: new ObjectId(id) };
+            const updatedClass = {
+                $set: {
+                    className: classData.className,
+                    price: classData.price,
+                    total_seats: classData.total_seats,
+                    image: classData.image
+                },
+            };
+
+            const result = await toyCollection.updateOne(query, updatedClass);
+            res.send(result)
+
+        })
+
         app.get('/classes/:id', verifyJWT, async (req, res) => {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) };
