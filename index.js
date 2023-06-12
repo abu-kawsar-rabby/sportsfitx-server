@@ -142,6 +142,19 @@ async function run() {
             res.send(result);
         })
 
+        app.get('/instructor', async (req, res) => {
+            const query = { role: 'instructor' };
+            result = await userCollection.find(query).toArray();
+            res.send(result);
+        })
+
+        app.get('/popular-instructor', async (req, res) => {
+            const query = { role: 'instructor' };
+            const sortOptions = { enrollment: -1 }
+            result = await userCollection.find(query).sort(sortOptions).limit(6).toArray();
+            res.send(result);
+        })
+
         app.get('/manage-classes', verifyJWT, verifyAdmin, async (req, res) => {
             result = await classCollection.find().toArray();
             res.send(result);
