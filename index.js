@@ -138,8 +138,7 @@ async function run() {
         app.get('/popular-classes', async (req, res) => {
             const query = { status: 'approved' };
             const sortOptions = { enrollment: -1 }
-            // todo limit 6 only
-            result = await classCollection.find(query).sort(sortOptions).toArray();
+            result = await classCollection.find(query).sort(sortOptions).limit(6).toArray();
             res.send(result);
         })
 
